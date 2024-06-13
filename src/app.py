@@ -12,5 +12,6 @@ restricciones = pd.read_excel(archivo, sheet_name= "Restricciones")
 
 modalidades_alta_prioridad = modalidades[modalidades["Prioridades"] == "Alta"]
 aulas_del_atlantico = aulas[aulas["Sede "] == "Atlántico "]
+materias_informatica = materias[materias["Carrera"] == "Ing. Informática "]
 
-print(aulas_del_atlantico)
+print(materias_informatica)
