@@ -4,6 +4,12 @@ Este proyecto permite gestionar los horarios de profesores y convertirlos a form
 
 ## Instalación
 
-pip install -r requirements.txt
+1. Instalar las dependencias:
+    ```sh
+    pip install -r requirements.txt
+    ```
 
-python main.py
+2. Ejecutar el script principal:
+    ```sh
+    python main.py
+    ```
