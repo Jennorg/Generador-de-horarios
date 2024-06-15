@@ -1,5 +1,5 @@
 import openpyxl
-from .materia import Materia
+from .Materia import Materia
 
 
 class Profesor:

@@ -5,7 +5,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 import io
-from .profesor import Profesor
+from .Profesor import Profesor
 from .leer_datos import leer_datos
 
 def preparar_datos():
