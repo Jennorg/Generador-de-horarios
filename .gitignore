@@ -5,3 +5,4 @@ horario_profesor.xlsx
 *.pyc
 .DS_Store
 .vscode/
+~$horario_profesor.xlsx
