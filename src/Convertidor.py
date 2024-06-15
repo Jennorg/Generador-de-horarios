@@ -1,13 +1,28 @@
-# -*- coding: utf-8 -*-
-
 import openpyxl
 from openpyxl import load_workbook
-from openpyxl.styles import Alignment
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 import io
+from .profesor import Profesor
+from .leer_datos import leer_datos
+
+def preparar_datos():
+    dias_semana = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]
+    datos = leer_datos()
+    
+    if datos is None:
+        raise Exception("Error al leer los datos del archivo Excel.")
+    
+    materias_data = datos["materias"].to_dict('records')
+    profesor1 = Profesor("Juan", "Biología")
+
+    for dia in dias_semana:
+        for materia_data in materias_data:
+            profesor1.agregar_materia(materia_data["Nombre"], "Ing", 1, dia, "2:00", "2:50")
+
+    return profesor1
 
 def convertir_excel_a_pdf(archivo_excel, archivo_pdf):
     # Cargar el libro de trabajo de Excel
@@ -70,9 +85,11 @@ def convertir_excel_a_pdf(archivo_excel, archivo_pdf):
 
     print('Archivo PDF guardado en:')
 
-# Ejemplo de uso
-if __name__ == "__main__":
+def ejecutar_proceso():
+    profesor1 = preparar_datos()
+    profesor1.mostrar_informacion()
     archivo_excel = 'horario_profesor.xlsx'
+    profesor1.guardar_en_excel(archivo_excel)
     archivo_pdf = 'horario_profesor.pdf'
     convertir_excel_a_pdf(archivo_excel, archivo_pdf)
 

@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 import openpyxl
-from Materia import Materia
+from .materia import Materia
 
 
 class Profesor:
@@ -61,17 +60,4 @@ class Profesor:
 
         # Guardar el archivo
         wb.save(archivo)
-        print('Información guardada en {}', format(archivo))
-
-# Ejemplo de uso
-profesor1 = Profesor("Juan", "Biología")
-# Agregar materias al profesor
-profesor1.agregar_materia("Matemáticas","Ing Informatica", 1, "LUNES", "7:50", "10:00")
-profesor1.agregar_materia("Física","Ing Informatica", 2, "MIERCOLES", "12:15", "12:00")
-
-# Mostrar la información del profesor y sus materias
-profesor1.mostrar_informacion()
-
-# Guardar la información en un archivo Excel
-profesor1.guardar_en_excel("horario_profesor.xlsx")
-
+        print('Información guardada en {}'.format(archivo))

@@ -1,0 +1,7 @@
+__pycache__/ 
+# Ignorar archivos de horario del profesor
+horario_profesor.pdf
+horario_profesor.xlsx
+*.pyc
+.DS_Store
+.vscode/
