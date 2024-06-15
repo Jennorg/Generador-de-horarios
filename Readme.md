@@ -5,4 +5,5 @@ Este proyecto permite gestionar los horarios de profesores y convertirlos a form
 ## Instalación
 
 pip install -r requirements.txt
+
 python main.py
