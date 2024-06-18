@@ -3,7 +3,7 @@ import random
 
 def leer_datos():
     try:
-        archivo = "data/DATOSHORARIOS.xlsx"
+        archivo = "../data/DATOSHORARIOS.xlsx"
         profesores_df = pd.read_excel(archivo, sheet_name="Profesores")
         materias_df = pd.read_excel(archivo, sheet_name="Materias")
         aulas_df = pd.read_excel(archivo, sheet_name="Aulas")

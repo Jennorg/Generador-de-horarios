@@ -4,7 +4,7 @@ from reportlab.pdfgen import canvas
 import random
 
 # Leer archivo Excel
-datos = "DATOSHORARIOS.xlsx"
+datos = "../data/DATOSHORARIOS.xlsx"
 
 try:
     profesores = pd.read_excel(datos, sheet_name="Profesores")
@@ -20,7 +20,8 @@ except Exception as e:
 # Convertir 'Dias disponibles (Prioridad)' a string y manejar NaNs
 profesores['Dias disponibles (Prioridad)'] = profesores['Dias disponibles (Prioridad)'].fillna('').astype(str)
 
-def asignar_horario(profesores, materias, modalidades, aulas, bloques):
+#Previo asignar_horario(profesores, materias, modalidades, aulas, bloques)
+def asignar_horario(profesores, materias, aulas, bloques):
     horarios_asignados = []
 
     # Filtrar materias que no tienen información completa
