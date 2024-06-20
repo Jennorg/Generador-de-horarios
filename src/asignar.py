@@ -28,7 +28,7 @@ class Recuperar_Datos:
       nombreP = fila['Nombre completo']
       materias = fila['Materias']
       self.asignarTuplaProf(materias, cedulaP)
-      self.profesores.append(dict({"cedula": cedulaP, "nombre": nombreP, "materias": materias}))
+      self.profesores.append(dict({"cedula": cedulaP, "nombre": nombreP, "materias": materias, "horario": { "lunes": [None] * 9, "martes": [None] * 9, "miercoles": [None] * 9, "jueves": [None] * 9, "viernes": [None] * 9 }}))
    
     return self.profesores
   
@@ -86,7 +86,7 @@ class Recuperar_Datos:
         modulo = fila['Módulo']
         capacidad = fila['Capacidad']
         tipo_aula = fila['Tipo aula']
-        self.aulas.append(dict({"id_aula": id_aula, "codigo": codigo, "sede": sede, "modulo": modulo, "capacidad": capacidad, "tipo_aula": tipo_aula}))
+        self.aulas.append(dict({"id_aula": id_aula, "codigo": codigo, "sede": sede, "modulo": modulo, "capacidad": capacidad, "tipo_aula": tipo_aula, "horario": { "lunes": [None] * 9, "martes": [None] * 9, "miercoles": [None] * 9, "jueves": [None] * 9, "viernes": [None] * 9 }}))
 
 
     except Exception as excepcion:
