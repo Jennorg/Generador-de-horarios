@@ -81,7 +81,7 @@ class Horario:
         # Convertir los archivos de Excel a PDF
         for archivo in archivos_generados:
             self.convertir_a_pdf(archivo)
-
+            
     def convertir_a_pdf(self, archivo_excel):
         # Leer el archivo Excel con pandas
         df = pd.read_excel(archivo_excel, sheet_name=None)
@@ -96,15 +96,26 @@ class Horario:
         for semestre, df_sheet in df.items():
             # Añadir título del semestre
             elements.append(Paragraph(semestre, getSampleStyleSheet()['Heading1']))
-            
+
             # Convertir DataFrame de pandas a lista de listas para la tabla de reportlab
             data = [df_sheet.columns.values.tolist()] + df_sheet.values.tolist()
 
             # Ajustar el tamaño del texto para que quepa en las celdas
             col_widths = [1.5 * inch] * len(df_sheet.columns)
 
+            # Reemplazar None por ""
+            adjusted_data = []
+            for row in data:
+                adjusted_row = []
+                for cell in row:
+                    if pd.isna(cell):
+                        adjusted_row.append("")
+                    else:
+                        adjusted_row.append(cell)
+                adjusted_data.append(adjusted_row)
+
             # Crear tabla de reportlab
-            table = Table(data, colWidths=col_widths)
+            table = Table(adjusted_data, colWidths=col_widths)
 
             # Estilo de la tabla
             style = TableStyle([
@@ -120,8 +131,8 @@ class Horario:
             table.setStyle(style)
 
             # Ajustar el texto dentro de las celdas usando `para` en lugar de texto simple
-            adjusted_data = []
-            for row in data:
+            adjusted_table = []
+            for row in adjusted_data:
                 adjusted_row = []
                 for cell in row:
                     if isinstance(cell, str):
@@ -129,9 +140,10 @@ class Horario:
                     else:
                         adjusted_cell = cell
                     adjusted_row.append(adjusted_cell)
-                adjusted_data.append(adjusted_row)
+                adjusted_table.append(adjusted_row)
 
-            table = Table(adjusted_data, colWidths=col_widths)
+            # Crear tabla de reportlab con los datos ajustados
+            table = Table(adjusted_table, colWidths=col_widths)
             table.setStyle(style)
 
             # Añadir la tabla al documento
@@ -140,6 +152,7 @@ class Horario:
 
         # Construir el documento PDF
         doc.build(elements)
+
 
     def wrap_text(self, text, width, font_size):
         max_chars = int(width / (font_size * 0.5))  # Máximo número de caracteres por línea
@@ -159,7 +172,6 @@ class Horario:
         lines.append(current_line.strip())
         
         return "\n".join(lines)
-
 
 
 # # Ejemplo de uso
