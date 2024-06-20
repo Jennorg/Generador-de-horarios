@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
-
 import openpyxl
 from openpyxl.styles import Alignment, Border, Side
 import copy
+from fpdf import FPDF #para poder transformar a pdf para instalarlo pip install fpdf
 
 class Horario:
     def __init__(self):
@@ -63,7 +62,7 @@ class Horario:
         for hora in horas:
             ws.append([hora])
 
-   # Rellenar el horario con las materias desde la estructura del diccionario
+        # Rellenar el horario con las materias desde la estructura del diccionario
         for semestre, semanas in self.horario.items():
             for semana, dias_semana in semanas.items():
                 for dia, bloques in dias_semana[0].items():
@@ -116,12 +115,52 @@ class Horario:
         print('Información guardada en {}'.format(archivo))
 
 
+
+
+
+
+
+    def convertir_a_pdf(self, archivo_excel, archivo_pdf):
+        wb = openpyxl.load_workbook(archivo_excel)
+        ws = wb.active
+
+        pdf = FPDF('L', 'mm', 'A4')  # Crear un PDF en modo apaisado
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+
+        # Ajustar anchos de las columnas y alturas de las filas
+        col_widths = []
+        for col in ws.iter_cols():
+            max_length = 0
+            for cell in col:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+            col_widths.append(max_length * 3)  # Ajuste aproximado de la anchura
+
+        row_height = 10  # Altura de fila por defecto
+
+        # Obtener el contenido del archivo Excel y agregarlo al PDF
+        for row in ws.iter_rows(values_only=True):
+            for col_idx, cell in enumerate(row):
+                if cell is None:
+                    pdf.cell(col_widths[col_idx], row_height, ' ', border=1, align='C')
+                else:
+                    pdf.cell(col_widths[col_idx], row_height, str(cell), border=1, align='C')
+            pdf.ln(row_height)
+
+        pdf.output(archivo_pdf)
+        print('Información guardada en {}'.format(archivo_pdf))
+
+
 # Crear instancia de Horario
 mi_horario = Horario()
 
 # Agregar materias al horario
 mi_horario.agregar_materia("lunes", 0, 2, "Matemáticas", "Aula 101")  # Ocupa bloques 1, 2 y 3
-mi_horario.agregar_materia("jueves", 3, 4, "Historia", "Aula 104")  # Ocupa bloques 1, 2 y 3
+mi_horario.agregar_materia("jueves", 3, 4, "Historia", "Aula 104")  # Ocupa bloques 4 y 5
 
 # Guardar el horario en un archivo de Excel
 mi_horario.guardar_en_excel("horario.xlsx")
+
+# Convertir el archivo de Excel a PDF
+mi_horario.convertir_a_pdf("horario.xlsx", "horario.pdf")
