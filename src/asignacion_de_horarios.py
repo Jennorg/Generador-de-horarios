@@ -21,9 +21,24 @@ bloques = datos.bloques
 carreras = datos.carreras
 
 def profesor_ocupado(dia, bloque_inicio, bloque_fin, cedula): # se buscara al profesor en la lista de profesores y se verificara si esta ocupado o no
+    profesor = buscar_profesor(cedula)
+
+    horario_profesor = profesor["horario"]
+    if dia in horario_profesor and bloque_inicio in horario_profesor[dia]:
+        for bloque in range(bloque_inicio, bloque_fin + 1):
+            if horario_profesor[dia][bloque] is not None:
+                return True
     return False
 
 def aula_ocupada(dia, bloque_inicio, bloque_fin, id_aula):
+    for aula in aulas:
+        if aula["id_aula"] == id_aula:
+            horario_aula = aula["horario"]
+            if dia in horario_aula and bloque_inicio in horario_aula[dia]:
+                for bloque in range(bloque_inicio, bloque_fin + 1):
+                    if horario_aula[dia][bloque] is not None:
+                        return True
+            break
     return False
 
 
