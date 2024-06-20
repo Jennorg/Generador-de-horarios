@@ -74,7 +74,7 @@ def asignar_bloques_horario(materia, inicio, final, dia, prof, seccion, aulas):
             break
     
     for bloque in range(inicio, final + 1):
-        aula["horario"][dia][bloque] = {
+        aula["horario"][dia][bloque-1] = {
             "materia": materia["nombre"],
             "profesor": profesor['nombre'],
             "cedula_profesor": prof,
@@ -85,7 +85,7 @@ def asignar_bloques_horario(materia, inicio, final, dia, prof, seccion, aulas):
             "codigo": materia["codigo"]
         }
         
-        profesor["horario"][dia][bloque] = {
+        profesor["horario"][dia][bloque-1] = {
             "materia": materia["nombre"],
             "profesor": profesor['nombre'],
             "cedula_profesor": prof,
@@ -96,7 +96,7 @@ def asignar_bloques_horario(materia, inicio, final, dia, prof, seccion, aulas):
             "codigo": materia["codigo"]
         }
         
-        horario[materia["carrera"]]["semestre " + str(materia["semestre"])][seccion][dia][bloque] = {
+        horario[materia["carrera"]]["semestre " + str(materia["semestre"])][seccion][dia][bloque-1] = {
             "materia": materia["nombre"],
             "profesor": profesor['nombre'],
             "cedula_profesor": prof,
