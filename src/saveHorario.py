@@ -4,7 +4,6 @@ import openpyxl
 from openpyxl.styles import Alignment
 import pandas as pd
 from reportlab.lib.pagesizes import A4, landscape
-from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, PageBreak, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
@@ -28,52 +27,12 @@ class Horario:
             wb = openpyxl.Workbook()
             wb.remove(wb.active)  # Eliminar la hoja predeterminada creada por openpyxl
             
-            for semestre, horarios_list in semestres.items():
-                for idx, horarios in enumerate(horarios_list):
-                    # Crear una hoja para el semestre
-                    sheet = wb.create_sheet(title=f"{semestre}")
+            for semestre, secciones in semestres.items():
 
-                    # Definir las horas como primera columna
-                    horas = [
-                        "7:50 A 8:40", "8:45 A 9:35", "9:35 A 10:25",
-                        "10:30 A 11:20", "11:20 A 12:10", "12:15 A 1:10",
-                        "1:10 A 2:00", "2:00 A 2:50", "2:55 A 3:45"
-                    ]
-                    # Escribir las horas en la primera columna
-                    sheet.cell(row=1, column=1, value="Hora")
-                    for i, hora in enumerate(horas):
-                        sheet.cell(row=i+2, column=1, value=hora)
-                        sheet.cell(row=i+2, column=1).alignment = Alignment(horizontal='center', vertical='center')
-
-                    # Definir los días como encabezados de columnas
-                    dias = ["lunes", "martes", "miercoles", "jueves", "viernes"]
-                    for i, dia in enumerate(dias):
-                        sheet.cell(row=1, column=i+2, value=dia.capitalize())
-                        sheet.cell(row=1, column=i+2).alignment = Alignment(horizontal='center', vertical='center')
-
-                    # Obtener los datos para escribir en el archivo Excel
-                    for dia, bloques in horarios.items():
-                        for bloque, materia in enumerate(bloques):
-                            if materia is not None:
-                                # Crear el valor de la celda con la información de la materia, el profesor y la sección
-                                valor_celda = f"{materia['materia']} - {materia['profesor']} Aula: {materia['aula']}"
-                                # Escribir en la celda correspondiente
-                                sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value=valor_celda)
-                                sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2).alignment = Alignment(horizontal='center', vertical='center')
-                                
-                    # Ajustar el tamaño de las celdas para que se vea todo el contenido
-                    for col in sheet.columns:
-                        max_length = 0
-                        column = col[0].column_letter  # Obtener el nombre de la columna
-                        for cell in col:
-                            try:
-                                if len(str(cell.value)) > max_length:
-                                    max_length = len(cell.value)
-                            except:
-                                pass
-                        adjusted_width = (max_length + 2)
-                        sheet.column_dimensions[column].width = adjusted_width
-                    break
+                if isinstance(secciones, list):  # Si secciones es una lista
+                    for idx, horarios in enumerate(secciones):
+                        seccion = f"seccion {idx + 1}"
+                        self._crear_hoja(wb, semestre, seccion, horarios)
 
             # Guardar el archivo Excel
             wb.save(nombre_archivo)
@@ -81,7 +40,55 @@ class Horario:
         # Convertir los archivos de Excel a PDF
         for archivo in archivos_generados:
             self.convertir_a_pdf(archivo)
-            
+
+    def _crear_hoja(self, wb, semestre, seccion, horarios):
+        # Crear una hoja para el semestre y la sección
+        sheet = wb.create_sheet(title=f"{semestre} {seccion}")
+
+        # Definir las horas como primera columna
+        horas = [
+            "7:50 A 8:40", "8:45 A 9:35", "9:35 A 10:25",
+            "10:30 A 11:20", "11:20 A 12:10", "12:15 A 1:10",
+            "1:10 A 2:00", "2:00 A 2:50", "2:55 A 3:45"
+        ]
+        # Escribir las horas en la primera columna
+        sheet.cell(row=1, column=1, value="Hora")
+        for i, hora in enumerate(horas):
+            sheet.cell(row=i+2, column=1, value=hora)
+            sheet.cell(row=i+2, column=1).alignment = Alignment(horizontal='center', vertical='center')
+
+        # Definir los días como encabezados de columnas
+        dias = ["lunes", "martes", "miercoles", "jueves", "viernes"]
+        for i, dia in enumerate(dias):
+            sheet.cell(row=1, column=i+2, value=dia.capitalize())
+            sheet.cell(row=1, column=i+2).alignment = Alignment(horizontal='center', vertical='center')
+
+        # Obtener los datos para escribir en el archivo Excel
+        for dia, bloques in horarios.items():
+            for bloque, materia in enumerate(bloques):
+                if materia is not None:
+                    # Crear el valor de la celda con la información de la materia, el profesor y la sección
+                    valor_celda = f"{materia['materia']} - {materia['profesor']} Aula: {materia['aula']}"
+                    # Escribir en la celda correspondiente
+                    sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value=valor_celda)
+                    sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2).alignment = Alignment(horizontal='center', vertical='center')
+                else:
+                    sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value="")
+                    sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2).alignment = Alignment(horizontal='center', vertical='center')
+                    
+        # Ajustar el tamaño de las celdas para que se vea todo el contenido
+        for col in sheet.columns:
+            max_length = 0
+            column = col[0].column_letter  # Obtener el nombre de la columna
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2)
+            sheet.column_dimensions[column].width = adjusted_width
+
     def convertir_a_pdf(self, archivo_excel):
         # Leer el archivo Excel con pandas
         df = pd.read_excel(archivo_excel, sheet_name=None)
@@ -172,42 +179,3 @@ class Horario:
         lines.append(current_line.strip())
         
         return "\n".join(lines)
-
-
-# # Ejemplo de uso
-
-# materia1 = dict([("materia", "Software"), ("profesor", "Machetaso"), ("cedula_profesor", "V-213"), 
-#                    ("bloque_inicial", 0), ("bloque_final", 2), ("aula", "12"), ("modalidad", "Virtual"), ("codigo", "00011")])
-# materia2 = dict([("materia", "Base de Datos II"), ("profesor", "Clinea Cordero"), ("cedula_profesor", "V-223"), 
-#                    ("bloque_inicial", 3), ("bloque_final", 4), ("aula", "01"), ("modalidad", "Presencial"), ("codigo", "00012")])
-
-# cantidad_bloques = 9
-# lunes = [None] * cantidad_bloques
-# lunes[0] = materia1.copy()
-# lunes[1] = materia1.copy()
-# lunes[2] = materia1.copy()
-
-# miércoles = [None] * cantidad_bloques
-# miércoles[3] = materia2.copy()
-# miércoles[4] = materia2.copy()
-
-# nivel3 = {
-#     "lunes": lunes.copy(),
-#     "martes": lunes.copy(),
-#     "miércoles": miércoles.copy(),
-#     "jueves": lunes.copy(),
-#     "viernes": lunes.copy()
-# }
-# nivel4 = [nivel3]
-
-# # Ajustar semestre2 correctamente
-# semestre2 = {dia: bloques.copy() for dia, bloques in nivel3.items()}
-# semestre2["lunes"] = miércoles.copy()
-# semestre2["viernes"] = miércoles.copy()
-
-# nivel5 = {"semestre 1": nivel4, "semestre 2": [semestre2]}
-# nivel6 = {"Ingeniería en Informática": nivel5}
-
-# horario = Horario()
-# horario.definir_horario(nivel6)
-# horario.guardar_en_excel(nivel6)

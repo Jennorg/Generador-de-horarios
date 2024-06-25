@@ -121,6 +121,19 @@ def verificar_materia_asignada(seccion, materia_nombre):
                 return True
     return False
 
+def imprimir_horarios():
+    for carrera, semestres in horario.items():
+        print(f"Carrera: {carrera}")
+        for semestre, secciones in semestres.items():
+            print(f"  Semestre: {semestre}")
+            for i, seccion in enumerate(secciones):
+                print(f"    Sección {i + 1}:")
+                for dia, bloques in seccion.items():
+                    print(f"      {dia.capitalize()}:")
+                    for j, bloque in enumerate(bloques):
+                        if bloque:
+                            print(f"        Bloque {j + 1}: {bloque}")
+
 def main():
     for materia in materias:    
         if materia["carrera"] not in horario:
@@ -223,7 +236,9 @@ def main():
                         if i_dia == 5:
                             print(f"No se pudo asignar {materia['nombre']} en ninguno de los días para sección {sec}")
                             break
+    imprimir_horarios()  # Llamar a la función para imprimir los horarios
     return
+    
         
 main()
 
