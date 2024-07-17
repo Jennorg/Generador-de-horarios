@@ -40,6 +40,13 @@ def aula_ocupada(dia, bloque_inicio, bloque_fin, id_aula):
             break
     return False
 
+def verificar_materia_asignada(seccion, materia_nombre):
+    for dia in seccion:
+        for bloque in seccion[dia]:
+            if bloque and bloque.get("materia") == materia_nombre:
+                return True
+    return False
+
 
 def filtro_bloque_por_prioridad(prioridad, lista):
     lista_filtrada = [bloque for bloque in lista if bloque["prioridad"] == prioridad]
@@ -61,7 +68,6 @@ def asignar_bloques_horario(materia, inicio, final, dia, prof, seccion, aulas):
     if "Laboratorio" in materia['nombre']:
         sufijo = random.choice(["LBD", "LCB", "LCS", "LSD"])
         materia['nombre'] += f" {sufijo}"
-    
     
     aula = None
     while True:
@@ -113,13 +119,6 @@ def obtener_cantidad_secciones_semestre(carrera, semestre):
             secciones = materia["secciones"]
     return secciones
 
-def verificar_materia_asignada(seccion, materia_nombre):
-    for dia in seccion:
-        for bloque in seccion[dia]:
-            if bloque and bloque.get("materia") == materia_nombre:
-                return True
-    return False
-
 def imprimir_horarios():
     for carrera, semestres in horario.items():
         print(f"Carrera: {carrera}")
@@ -139,10 +138,9 @@ def main():
             horario[materia["carrera"]] = dict()
         
         if ("semestre " + str(materia["semestre"])) not in horario[materia["carrera"]]:
-            vacio = { "lunes": [None] * 9, "martes": [None] * 9, "miercoles": [None] * 9, "jueves": [None] * 9, "viernes": [None] * 9 }
             semestre = materia["semestre"]
             cantidad_secciones = obtener_cantidad_secciones_semestre(materia["carrera"], materia["semestre"])
-            horario[materia["carrera"]][f"semestre {semestre}"] = [dict(vacio) for _ in range(cantidad_secciones)]
+            horario[materia["carrera"]][f"semestre {semestre}"] = [dict({ "lunes": [None] * 9, "martes": [None] * 9, "miercoles": [None] * 9, "jueves": [None] * 9, "viernes": [None] * 9 }) for _ in range(cantidad_secciones)]
         
         seccion = horario[materia["carrera"]]["semestre " + str(materia["semestre"])]
         
@@ -152,7 +150,7 @@ def main():
         for profesor in materia["profesor"]:
             for sec in range(int(profesor[1])):
                 seccion_actual += 1
-                # print(seccion_actual)
+                print(materia["nombre"], materia["codigo"], seccion_actual)
                 if verificar_materia_asignada(seccion[seccion_actual], materia["nombre"]):
                     continue
 
