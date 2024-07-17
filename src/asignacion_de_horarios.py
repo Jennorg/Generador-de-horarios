@@ -22,12 +22,11 @@ carreras = datos.carreras
 
 def profesor_ocupado(dia, bloque_inicio, bloque_fin, cedula): # se buscara al profesor en la lista de profesores y se verificara si esta ocupado o no
     profesor = buscar_profesor(cedula)
-
+    
     horario_profesor = profesor["horario"]
-    if dia in horario_profesor and bloque_inicio in horario_profesor[dia]:
-        for bloque in range(bloque_inicio, bloque_fin + 1):
-            if horario_profesor[dia][bloque] is not None:
-                return True
+    for bloque in range(bloque_inicio, bloque_fin + 1):
+        if horario_profesor[dia][bloque] is not None:
+            return True
     return False
 
 def aula_ocupada(dia, bloque_inicio, bloque_fin, id_aula):
@@ -147,9 +146,14 @@ def main():
         
         seccion = horario[materia["carrera"]]["semestre " + str(materia["semestre"])]
         
+        seccion_actual = -1
+        # print(materia["nombre"], materia["codigo"])
+        # print(materia["profesor"])
         for profesor in materia["profesor"]:
             for sec in range(int(profesor[1])):
-                if verificar_materia_asignada(seccion[sec], materia["nombre"]):
+                seccion_actual += 1
+                # print(seccion_actual)
+                if verificar_materia_asignada(seccion[seccion_actual], materia["nombre"]):
                     continue
 
                 def obtener_bloques_con_prioridad(prioridad):
@@ -171,22 +175,23 @@ def main():
                         dia_exitoso = False
                         
                         if i_dia == 0:
-                            dia = seccion[sec]["lunes"]
+                            dia = seccion[seccion_actual]["lunes"]
                         elif i_dia == 1:
-                            dia = seccion[sec]["martes"]
+                            dia = seccion[seccion_actual]["martes"]
                         elif i_dia == 2:
-                            dia = seccion[sec]["miercoles"]
+                            dia = seccion[seccion_actual]["miercoles"]
                         elif i_dia == 3:
-                            dia = seccion[sec]["jueves"]
+                            dia = seccion[seccion_actual]["jueves"]
                         elif i_dia == 4:
-                            dia = seccion[sec]["viernes"]
+                            dia = seccion[seccion_actual]["viernes"]
                         
                         for i_bloque in range(inicio, final - 2):  # Ajustar rango para no exceder
-                            if profesor_ocupado(list(seccion[sec].keys())[i_dia], i_bloque, i_bloque + 2, profesor[0]) is True:
+                            if profesor_ocupado(list(seccion[seccion_actual].keys())[i_dia], i_bloque, i_bloque + 2, profesor[0]) is True:
                                 continue
                             
                             if dia[i_bloque] is None and dia[i_bloque + 1] is None and dia[i_bloque + 2] is None:
-                                asignar_bloques_horario(materia, i_bloque, i_bloque + 2, list(seccion[sec].keys())[i_dia], profesor[0], sec, aulas)
+                                print(f"Asignando {materia['nombre']} en {list(seccion[seccion_actual].keys())[i_dia]} para bloques {i_bloque} y {i_bloque + 2} de sección {seccion_actual}")
+                                asignar_bloques_horario(materia, i_bloque, i_bloque + 2, list(seccion[seccion_actual].keys())[i_dia], profesor[0], seccion_actual, aulas)
                                 dia_exitoso = True
                                 break
 
@@ -196,7 +201,7 @@ def main():
                         i_dia += 1
                         
                         if i_dia == 5:
-                            print(f"No se pudo asignar {materia['nombre']} en ninguno de los días para sección {sec}")
+                            print(f"No se pudo asignar {materia['nombre']} en ninguno de los días para sección {seccion_actual}")
                             break
                 else:  # 2 bloques
                     i_dia = 0
@@ -210,21 +215,21 @@ def main():
                         dia_exitoso = False
                         
                         if i_dia == 0:
-                            dia = seccion[sec]["lunes"]
+                            dia = seccion[seccion_actual]["lunes"]
                         elif i_dia == 1:
-                            dia = seccion[sec]["martes"]
+                            dia = seccion[seccion_actual]["martes"]
                         elif i_dia == 2:
-                            dia = seccion[sec]["miercoles"]
+                            dia = seccion[seccion_actual]["miercoles"]
                         elif i_dia == 3:
-                            dia = seccion[sec]["jueves"]
+                            dia = seccion[seccion_actual]["jueves"]
                         elif i_dia == 4:
-                            dia = seccion[sec]["viernes"]
-                        
+                            dia = seccion[seccion_actual]["viernes"]
                         for i_bloque in range(inicio, final - 1):  # Ajustar rango para no exceder
-                            if profesor_ocupado(list(seccion[sec].keys())[i_dia], i_bloque, i_bloque + 2, profesor[0]) is True:
+                            if profesor_ocupado(list(seccion[sec].keys())[i_dia], i_bloque, i_bloque + 1, profesor[0]) is True:
+                                print(f"No se pudo asignar {materia['nombre']} en ninguno de los días para sección {sec}")
                                 continue
                             if dia[i_bloque] is None and dia[i_bloque + 1] is None:
-                                asignar_bloques_horario(materia, i_bloque, i_bloque + 1, list(seccion[sec].keys())[i_dia], profesor[0], sec, aulas)
+                                asignar_bloques_horario(materia, i_bloque, i_bloque + 1, list(seccion[sec].keys())[i_dia], profesor[0], seccion_actual, aulas)
                                 dia_exitoso = True
                                 break
 
@@ -234,9 +239,11 @@ def main():
                         i_dia += 1
                         
                         if i_dia == 5:
-                            print(f"No se pudo asignar {materia['nombre']} en ninguno de los días para sección {sec}")
+                            print(f"No se pudo asignar {materia['nombre']} en ninguno de los días para sección {seccion_actual}")
                             break
-    imprimir_horarios()  # Llamar a la función para imprimir los horarios
+            
+    # imprimir_horarios()  # Llamar a la función para imprimir los horarios
+    # print(buscar_profesor("V10929321"))
     return
     
         
