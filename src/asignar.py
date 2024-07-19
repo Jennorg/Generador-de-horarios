@@ -1,6 +1,6 @@
 import pandas as pd
 
-dirExcel = "./DATOSHORARIOS.xlsx"
+dirExcel = "./DATOS HORARIOS.xlsm"
 
 def weekdays_to_int_array(days_string):
     days_string = days_string.replace(" ", "")
@@ -53,8 +53,8 @@ class Recuperar_Datos:
       nombreP = fila['Nombre completo']
       materias = fila['Materias']
       tiempo = fila['Horario']
-      dias_disp = weekdays_to_int_array(fila['Dias disponibles (Prioridad)'])
-      dias_disp_aux = weekdays_to_int_array(fila['Dias disponibles (Auxiliar)'])
+      dias_disp = weekdays_to_int_array(fila['Días disponibles (Prioridad)'])
+      dias_disp_aux = weekdays_to_int_array(fila['Días disponibles (Auxiliar)'])
       dias_disp.extend(dias_disp_aux)
   
       self.asignarTuplaProf(materias, cedulaP)
@@ -93,10 +93,10 @@ class Recuperar_Datos:
         modalidad = fila['Modalidad'].replace(" ", "")
         semestre = fila['Semestre']
         codigo_Aula = None
-        if fila['codigo aula'] == "NULL" or pd.isna(fila['codigo aula']) is True:
+        if fila['código aula '] == "NULL" or pd.isna(fila['código aula ']) is True:
           codigo_Aula = None
         else:
-          codigo_Aula = fila['codigo aula']
+          codigo_Aula = fila['código aula ']
           
         uc = fila['UC']
         self.materias.append({"codigo": codigo, "nombre": nombre, "profesor": [], "prioridad": prioridad, "secciones": secciones,

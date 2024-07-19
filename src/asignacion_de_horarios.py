@@ -244,7 +244,6 @@ def main():
                             aula = None
                             err = False
                             while True:
-                                print(materia['nombre'], materia['codigo'], materia['modalidad'])
                                 if materia['modalidad'] == "Virtual":
                                     aula = { "id_aula": "Virtual" }
                                     break
@@ -317,7 +316,6 @@ def main():
                         elif i_dia == 4:
                             dia = seccion[seccion_actual]["viernes"]
                         
-                        print(materia["carrera"], materia["semestre"], seccion_actual, list(seccion[seccion_actual].keys())[i_dia])
                         if cantidad_de_materias_por_dia(materia["carrera"], materia["semestre"], seccion_actual, list(seccion[seccion_actual].keys())[i_dia]) == globalVar['Maximo de Materias Por Dia']:
                             i_dia += 1
                             continue
@@ -333,8 +331,6 @@ def main():
                             err = False
                             
                             while True:
-                                
-                                print(materia['nombre'], materia['codigo'], materia['modalidad'])
                                 if materia['modalidad'] == "Virtual":
                                     aula = { "id_aula": "Virtual" }
                                     break
@@ -359,6 +355,8 @@ def main():
                                 continue
                             
                             if dia[i_bloque] is None and dia[i_bloque + 1] is None:
+                                
+                                print(f"Asignando {materia['nombre']} en {list(seccion[seccion_actual].keys())[i_dia]} para bloques {i_bloque} y {i_bloque + 2} de sección {seccion_actual}")
                                 asignar_bloques_horario(materia, i_bloque, i_bloque + 1, list(seccion[sec].keys())[i_dia], profesor[0], seccion_actual, aula)
                                 dia_exitoso = True
                                 break
@@ -386,7 +384,5 @@ def main():
         
 main()
 
-
-print(globalVar['Maximo de Materias Por Dia'])
 creador = Horario()
 creador.guardar_en_excel(horario)
