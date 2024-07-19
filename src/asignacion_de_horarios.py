@@ -1,4 +1,3 @@
-from tabulate import tabulate
 from saveHorario import Horario
 from asignar import Recuperar_Datos
 import random
@@ -232,6 +231,8 @@ def main():
                         elif i_dia == 4:
                             dia = seccion[seccion_actual]["viernes"]
                         
+                        
+                        # **
                         if cantidad_de_materias_por_dia(materia["carrera"], materia["semestre"], seccion_actual, list(seccion[seccion_actual].keys())[i_dia]) > globalVar['Maximo de Materias Por Dia']:
                             i_dia += 1
                             continue
@@ -294,9 +295,11 @@ def main():
                     while i_dia < 5:
                         dia_exitoso = False
                         
+                        print(materia['nombre'], materia['prioridad'])
                         inicio, final, err = obtener_bloques_trabajables(prioridad_interna, profesor)
 
                         # Hace el recorrido de la lista de dias prioritarios del profesor, en caso de que no se encuentre disponible, se intenta con la siguiente dia
+                        # print(buscar_profesor(profesor[0]))
                         if dia_disp_profesor(i_dia, profesor[0]) is False and intentos < 2:
                             i_dia += 1
                             continue
@@ -356,7 +359,7 @@ def main():
                             
                             if dia[i_bloque] is None and dia[i_bloque + 1] is None:
                                 
-                                print(f"Asignando {materia['nombre']} en {list(seccion[seccion_actual].keys())[i_dia]} para bloques {i_bloque} y {i_bloque + 2} de sección {seccion_actual}")
+                                print(f"Asignando {materia['nombre']} en {list(seccion[seccion_actual].keys())[i_dia]} para bloques {i_bloque} y {i_bloque + 1} de sección {seccion_actual}")
                                 asignar_bloques_horario(materia, i_bloque, i_bloque + 1, list(seccion[sec].keys())[i_dia], profesor[0], seccion_actual, aula)
                                 dia_exitoso = True
                                 break
@@ -381,7 +384,8 @@ def main():
     # print(buscar_profesor("V10929321"))
     return
     
-        
+     
+print(aulas)   
 main()
 
 creador = Horario()

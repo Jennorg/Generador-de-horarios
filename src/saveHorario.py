@@ -24,7 +24,7 @@ class Horario:
         self.horario = horario_dict  # Define el horario usando un diccionario proporcionado.
 
     def obtener_nombre_carrera(self, codigo_carrera):
-        archivo_datos_horarios = 'DATOSHORARIOS.xlsx'  # Nombre del archivo de Excel con datos de horarios.
+        archivo_datos_horarios = 'DATOS HORARIOS.xlsm'  # Nombre del archivo de Excel con datos de horarios.
         wb = openpyxl.load_workbook(archivo_datos_horarios)  # Carga el libro de trabajo de Excel.
         # Verifica si la hoja 'Carreras' no está presente en el libro de trabajo
         if 'Carreras' not in wb.sheetnames:
