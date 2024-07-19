@@ -4,6 +4,8 @@ import openpyxl
 from openpyxl.styles import Alignment
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill
+from openpyxl.utils import coordinate_to_tuple
+from openpyxl.worksheet.cell_range import CellRange
 import pandas as pd
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, PageBreak, Paragraph, Image
@@ -11,6 +13,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.lib.colors import yellow, blue
+import pdfkit
 
 import os  # Agrega esta línea al inicio de tu archivo
 
@@ -24,7 +27,6 @@ class Horario:
     def obtener_nombre_carrera(self, codigo_carrera):
         archivo_datos_horarios = 'DATOSHORARIOS.xlsx'
         wb = openpyxl.load_workbook(archivo_datos_horarios)
-        print("Hojas disponibles:", wb.sheetnames)  # Imprime las hojas disponibles
         if 'Carreras' not in wb.sheetnames:
             raise KeyError(f"La hoja 'Carreras' no existe en el archivo {archivo_datos_horarios}.")
         
@@ -104,41 +106,17 @@ class Horario:
         doc = SimpleDocTemplate(nombre_pdf, pagesize=A4)
 
         elements = []
-        # Mapeo de nombres de carrera a encabezados específicos
-        carrera_encabezado = {
-            "2072": [
-                "UNIVERSIDAD NACIONAL EXPERIMENTAL DE GUAYANA",
-                "VICERRECTORADO ACADÉMICO",
-                "COORDINACIÓN GENERAL DE PREGRADO",
-                "COORDINACIÓN INGENIERÍA EN INFORMÁTICA"
-            ],
-            "6350": [
-                "UNIVERSIDAD NACIONAL EXPERIMENTAL DE GUAYANA",
-                "VICERRECTORADO ACADÉMICO",
-                "COORDINACIÓN GENERAL DE PREGRADO",
-                "COORDINACIÓN CONTADURÍA PÚBLICA"
-            ],
-            "6176": [
-                "UNIVERSIDAD NACIONAL EXPERIMENTAL DE GUAYANA",
-                "VICERRECTORADO ACADÉMICO",
-                "COORDINACIÓN GENERAL DE PREGRADO",
-                "COORDINACIÓN GESTIÓN DE ALOJAMIENTO TURÍSTICO"
-            ]
-            # Agrega más mappings según sea necesario
-        }
 
         # Obtener el nombre del archivo sin extensión para determinar el encabezado
         nombre_archivo = os.path.basename(archivo_excel).split('.')[0]
 
-        if nombre_archivo in carrera_encabezado:
-            encabezado = carrera_encabezado[nombre_archivo]
-        else:
-            encabezado = [
-                "UNIVERSIDAD NACIONAL EXPERIMENTAL DE GUAYANA",
-                "VICERRECTORADO ACADÉMICO",
-                "COORDINACIÓN GENERAL DE PREGRADO",
-                f"COORDINACIÓN {nombre_archivo}"
-            ]
+        encabezado = [
+            "UNIVERSIDAD NACIONAL EXPERIMENTAL DE GUAYANA",
+            "VICERRECTORADO ACADÉMICO",
+            "COORDINACIÓN GENERAL DE PREGRADO",
+            f"COORDINACIÓN {nombre_archivo}"
+        ]
+
         # Construir la ruta relativa al directorio del script
         current_dir = os.path.dirname(__file__)
         logo_path = os.path.join(current_dir, 'images', 'logo.png')
@@ -196,6 +174,22 @@ class Horario:
                     adjusted_row.append(adjusted_cell)
                 adjusted_table.append(adjusted_row)
 
+  
+            # Aplicar color a las celdas no vacías con condición
+            for row_idx, row in enumerate(adjusted_table):
+                for col_idx, cell in enumerate(row):
+                    if cell:
+                        if '' in cell:
+                            style.add('BACKGROUND', (col_idx, row_idx), (col_idx, row_idx), colors.white)
+                        if 'Presencial' in cell:
+                            style.add('BACKGROUND', (col_idx, row_idx), (col_idx, row_idx), colors.yellow)
+                        if ' Virtual ' in cell:
+                            style.add('BACKGROUND', (col_idx, row_idx), (col_idx, row_idx), colors.lightblue)
+                        if row_idx > 0 and adjusted_table[row_idx - 1][col_idx] == cell or adjusted_table[row_idx - 2][col_idx] == cell :
+                            style.add('LINEBELOW', (col_idx, row_idx - 1), (col_idx, row_idx - 1), 0, colors.yellow)
+                            style.add('LINEABOVE', (col_idx, row_idx), (col_idx, row_idx), 0, colors.yellow)
+                            adjusted_table[row_idx][col_idx] = ""
+
             table = Table(adjusted_table, colWidths=col_widths)
             table.setStyle(style)
 
@@ -221,3 +215,5 @@ class Horario:
         lines.append(current_line.strip())
         
         return "\n".join(lines)
+
+ 
