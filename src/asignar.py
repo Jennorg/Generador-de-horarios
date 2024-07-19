@@ -2,6 +2,30 @@ import pandas as pd
 
 dirExcel = "./DATOSHORARIOS.xlsx"
 
+def weekdays_to_int_array(days_string):
+    days_string = days_string.replace(" ", "")
+    days_list = days_string.split(",")
+    int_array = []
+
+    for day in days_list:
+        day = day.strip()
+        if day == "Lunes":
+            int_array.append(0)
+        elif day == "Martes":
+            int_array.append(1)
+        elif day == "Miercoles":
+            int_array.append(2)
+        elif day == "Jueves":
+            int_array.append(3)
+        elif day == "Viernes":
+            int_array.append(4)
+        elif day == "Sabado":
+            int_array.append(5)
+        elif day == "Domingo":
+            int_array.append(6)
+            
+    return int_array
+
 class Recuperar_Datos:
   def __init__(self):
     self.profesores = list()
@@ -9,6 +33,7 @@ class Recuperar_Datos:
     self.aulas = list()
     self.carreras = list()
     self.bloques = list()
+    self.globalVar = dict()
 
   def insertarProfesores(self):
     self.profesores = list()
@@ -27,8 +52,13 @@ class Recuperar_Datos:
       cedulaP = fila['Cédula']
       nombreP = fila['Nombre completo']
       materias = fila['Materias']
+      tiempo = fila['Horario']
+      dias_disp = weekdays_to_int_array(fila['Dias disponibles (Prioridad)'])
+      dias_disp_aux = weekdays_to_int_array(fila['Dias disponibles (Auxiliar)'])
+      dias_disp.extend(dias_disp_aux)
+  
       self.asignarTuplaProf(materias, cedulaP)
-      self.profesores.append(dict({"cedula": cedulaP, "nombre": nombreP, "materias": materias, "horario": { "lunes": [None] * 9, "martes": [None] * 9, "miercoles": [None] * 9, "jueves": [None] * 9, "viernes": [None] * 9 }}))
+      self.profesores.append(dict({"cedula": cedulaP, "dias_disp": dias_disp, "tiempo": tiempo, "nombre": nombreP, "materias": materias, "horario": { "lunes": [None] * 9, "martes": [None] * 9, "miercoles": [None] * 9, "jueves": [None] * 9, "viernes": [None] * 9 }}))
    
     return self.profesores
   
@@ -59,11 +89,18 @@ class Recuperar_Datos:
         prioridad = fila['Prioridad']
         secciones = fila['Secciones']
         carrera = fila['Código carrera']
-        modalidad = fila['Modalidad']
+        # eliminar los espacios en blanco de la modalidad
+        modalidad = fila['Modalidad'].replace(" ", "")
         semestre = fila['Semestre']
+        codigo_Aula = None
+        if fila['codigo aula'] == "NULL" or pd.isna(fila['codigo aula']) is True:
+          codigo_Aula = None
+        else:
+          codigo_Aula = fila['codigo aula']
+          
         uc = fila['UC']
         self.materias.append({"codigo": codigo, "nombre": nombre, "profesor": [], "prioridad": prioridad, "secciones": secciones,
-							"carrera": carrera,"modalidad": modalidad, "semestre": semestre, "UC": uc})
+							"carrera": carrera,"modalidad": modalidad, "semestre": semestre, "UC": uc, "aula": codigo_Aula})
 
     except Exception as excepcion:
       print("Ocurrió un error al leer el archivo excel.")
@@ -134,3 +171,22 @@ class Recuperar_Datos:
       print(f"Ocurrió una Excepción de tipo {excepcion}")
       exit()
     return self.carreras
+  
+  def insertar_globarVar(self):
+    self.globalVar = dict()
+
+    try:
+      carrerasExcel = pd.read_excel(dirExcel, sheet_name="Restricciones")
+
+      for indice, fila in carrerasExcel.iterrows():
+        restriccion = fila['Restricción']
+        if pd.isna(fila['Valor']) is False:
+          nombre = int(fila['Valor'])
+          self.globalVar[restriccion] = nombre
+
+    except Exception as excepcion:
+      print("Ocurrió un error al leer el archivo excel.")
+      print(excepcion)
+      print(f"Ocurrió una Excepción de tipo {excepcion}")
+      exit()
+    return self.globalVar
