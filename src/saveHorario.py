@@ -2,18 +2,22 @@
 
 import openpyxl
 from openpyxl.styles import Alignment
+from openpyxl import Workbook
+from openpyxl.styles import PatternFill
 import pandas as pd
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, PageBreak, Paragraph, Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib import colors
+from reportlab.lib.colors import yellow, blue
+
 import os  # Agrega esta línea al inicio de tu archivo
 
 class Horario:
     def __init__(self):
         self.horario = None
-
+    
     def definir_horario(self, horario_dict):
         self.horario = horario_dict
 
@@ -51,12 +55,19 @@ class Horario:
         for dia, bloques in horarios.items():
             for bloque, materia in enumerate(bloques):
                 if materia is not None:
-                    valor_celda = f"{materia['materia']} - {materia['profesor']} Aula: {materia['aula']}"
-                    sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value=valor_celda)
-                    sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2).alignment = Alignment(horizontal='center', vertical='center')
+                    # Definir colores de fondo
+                    yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+                    blue_fill = PatternFill(start_color="00A8FF", end_color="00A8FF", fill_type="solid")
+                    valor_celda = f"{materia['materia']} - {materia['profesor']} - Aula: {materia['aula']} - {materia['modalidad']}"
+                    cell = sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value=valor_celda)
+                    cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+                    if 'Presencial' in valor_celda:
+                        cell.fill = yellow_fill
+                    elif 'Virtual' in valor_celda:
+                        cell.fill = blue_fill               
                 else:
-                    sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value="")
-                    sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2).alignment = Alignment(horizontal='center', vertical='center')
+                    cell = sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value="")
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
         for col in sheet.columns:
             max_length = 0
             column = col[0].column_letter
@@ -67,7 +78,7 @@ class Horario:
                 except:
                     pass
             adjusted_width = (max_length + 2)
-            sheet.column_dimensions[column].width = adjusted_width
+            sheet.column_dimensions[column].width = 25
 
     def convertir_a_pdf(self, archivo_excel):
         df = pd.read_excel(archivo_excel, sheet_name=None)
