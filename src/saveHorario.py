@@ -89,15 +89,17 @@ class Horario:
                 if materia is not None:
                     yellow_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")  # Define el color de fondo amarillo.
                     blue_fill = PatternFill(start_color="00A8FF", end_color="00A8FF", fill_type="solid")  # Define el color de fondo azul.
-                    valor_celda = f"{materia['materia']} - {materia['profesor']} - Aula: {materia['aula']} - {materia['modalidad']}"  # Formatea el texto de la celda.
-                    cell = sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value=valor_celda)  # Rellena la celda con la información.
-                    cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)  # Centra el texto y permite el ajuste de línea.
-                    #si materia es presencial
-                    if 'Presencial' in valor_celda:
-                        cell.fill = yellow_fill  # Aplica el color amarillo para clases presenciales.
-                    #si materia es virtual
-                    elif 'Virtual' in valor_celda:
-                        cell.fill = blue_fill  # Aplica el color azul para clases virtuales.
+                    if 'Presencial' in materia['modalidad']:
+                     valor_celda = f"{materia['materia']} - {materia['profesor']} - Aula: {materia['aula']} - {materia['modalidad']}   "  # Formatea el texto de la celda.
+                     cell = sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value=valor_celda)  # Rellena la celda con la información.
+                     cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)  # Centra el texto y permite el ajuste de línea.
+                     cell.fill = yellow_fill  # Aplica el color amarillo para clases presenciales.
+                    
+                    elif 'Virtual' in materia['modalidad']:
+                     valor_celda = f"{materia['materia']} - {materia['profesor']} - {materia['modalidad']}"  # Formatea el texto de la celda.
+                     cell = sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value=valor_celda)  # Rellena la celda con la información.
+                     cell.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+                     cell.fill = blue_fill  # Aplica el color azul para clases virtuales.
                 else:
                     cell = sheet.cell(row=bloque + 2, column=dias.index(dia.lower()) + 2, value="")  # Crea una celda vacía si no hay materia.
                     cell.alignment = Alignment(horizontal='center', vertical='center')  # Centra el texto en la celda vacía.
