@@ -21,10 +21,28 @@ class Horario:
     def definir_horario(self, horario_dict):
         self.horario = horario_dict
 
+    def obtener_nombre_carrera(self, codigo_carrera):
+        archivo_datos_horarios = 'DATOSHORARIOS.xlsx'
+        wb = openpyxl.load_workbook(archivo_datos_horarios)
+        print("Hojas disponibles:", wb.sheetnames)  # Imprime las hojas disponibles
+        if 'Carreras' not in wb.sheetnames:
+            raise KeyError(f"La hoja 'Carreras' no existe en el archivo {archivo_datos_horarios}.")
+        
+        hoja_carreras = wb['Carreras']
+        for fila in hoja_carreras.iter_rows(min_row=2, values_only=True):
+            vacio, codigo, nombre = fila[:3]  # Solo tomar las primeras tres columnas
+            if codigo == codigo_carrera:
+                return nombre
+        return None
+
     def guardar_en_excel(self, datos):
         archivos_generados = []
         for carrera, semestres in datos.items():
-            nombre_archivo = f"{carrera}.xlsx"
+            nombre_carrera = self.obtener_nombre_carrera(carrera)
+            if nombre_carrera:
+                nombre_archivo = f"{nombre_carrera}.xlsx"
+            else:
+                nombre_archivo = f"{carrera}.xlsx"
             archivos_generados.append(nombre_archivo)
             wb = openpyxl.Workbook()
             wb.remove(wb.active)
