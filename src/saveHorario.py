@@ -183,12 +183,16 @@ class Horario:
                             style.add('BACKGROUND', (col_idx, row_idx), (col_idx, row_idx), colors.white)
                         if 'Presencial' in cell:
                             style.add('BACKGROUND', (col_idx, row_idx), (col_idx, row_idx), colors.yellow)
-                        if ' Virtual ' in cell:
+                            if row_idx > 0 and adjusted_table[row_idx - 1][col_idx] == cell or adjusted_table[row_idx - 2][col_idx] == cell :
+                                style.add('LINEBELOW', (col_idx, row_idx - 1), (col_idx, row_idx - 1), 0, colors.yellow)
+                                style.add('LINEABOVE', (col_idx, row_idx), (col_idx, row_idx), 0, colors.yellow)
+                                adjusted_table[row_idx][col_idx] = ""
+                        if 'Virtual' in cell:
                             style.add('BACKGROUND', (col_idx, row_idx), (col_idx, row_idx), colors.lightblue)
-                        if row_idx > 0 and adjusted_table[row_idx - 1][col_idx] == cell or adjusted_table[row_idx - 2][col_idx] == cell :
-                            style.add('LINEBELOW', (col_idx, row_idx - 1), (col_idx, row_idx - 1), 0, colors.yellow)
-                            style.add('LINEABOVE', (col_idx, row_idx), (col_idx, row_idx), 0, colors.yellow)
-                            adjusted_table[row_idx][col_idx] = ""
+                            if row_idx > 0 and adjusted_table[row_idx - 1][col_idx] == cell or adjusted_table[row_idx - 2][col_idx] == cell :
+                                style.add('LINEBELOW', (col_idx, row_idx - 1), (col_idx, row_idx - 1), 0, colors.lightblue)
+                                style.add('LINEABOVE', (col_idx, row_idx), (col_idx, row_idx), 0, colors.lightblue)
+                                adjusted_table[row_idx][col_idx] = ""
 
             table = Table(adjusted_table, colWidths=col_widths)
             table.setStyle(style)
