@@ -1,0 +1,1 @@
+pip3 install numpy matplotlib scipy pandas openpyxl reportlab tabulate pdfkit
